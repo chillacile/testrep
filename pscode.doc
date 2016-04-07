@@ -1,0 +1,88 @@
+理念：
+{编译预处理的时候，修改C++代码，之后调用普通的编译器}，这个操作本身也放到编译器里藏起来，没人知道到底是什么机制，你也看不到代码是在编译前变化了
+除了C++本身的[]再也不存在以外，不影响其它任何一个语法，而且有选项可以选择新旧
+想要原来的数组和现在的数组共存本来就没意义，要么全是新数组，要么全是旧数组，要么每个文件里你定义一个选项自己选
+
+1.	功能1：寻找[，寻找配对的]，找到一对[]
+2.	功能2：判断需要修改的语句类别
+A)	静态数组声明：起始字符+空格+字符+复数[]
+B)	数组使用：非变量非new+变量名+复数[]
+C)	数组声明：起始字符+空格+复数*+字符+复数[]
+D)	动态生成：new+空格+字符+复数*+[]
+3.	功能3：修改
+A)	起始字符+空格+字符{name}+复数{n}个[{num_i}]
+①	在此语句下添加
+1.	const static bool {name}_pointer = false;
+2.	const static int {name}_dimen = {n};
+3.	{i} for n次：const static int {name}_num_{i} = {num_i}
+②	保证信息的完整，包括数组的类型是否动态，维度，每一维数组长度
+
+class CA
+{
+public:
+	int a[25];
+	const static bool a_pointer = false;
+	const static int a_dimen = 1;
+	const static int a_num_0 = 25;
+
+	double b[TEST_NUM][TEST_NUM + 1][2 * TEST_NUM];
+	const static bool b_pointer = false;
+	const static int b_dimen = 3;
+	const static int b_num_0 = TEST_NUM;
+	const static int b_num_1 = TEST_NUM + 1;
+	const static int b_num_2 = 2 * TEST_NUM;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+B)	非变量非new+变量名{{由.或者->结尾的pre}+字符{name}}+复数{n}个[{string_i}]
+①	在此语句中修改
+1.	{i} for n次：在第i个[{string_i}]更改为，[({ string_i }) % {pre+name_num_i}]
+②	保证了每一个[]中的量，都被相应数组的相应的维度的相应数组长度%一次
+③	一个N维数组的N维同时处理
+④	由{pre+name}来保证类里面的数组的处理
+⑤	先处理.或->左边的数组再处理右边的，保证连续的类数组对象[]，右边的[]无法影响到左边的[]里的内容
+⑥	从外向内修改[]，保证循环嵌套的[]的实现，外围的数组的[]不可能先影响到[]内嵌的数组
+
+
+变量名没有前缀的.和->的时候
+ca.b[i][j][k] = i + j + k;
+ca.b[(i) % ca.b_num_0][(j) % ca.b_num_1][(k) % ca.b_num_2] = i + j + k;
+
+
+
+
+变量名有前缀的.和->的时候
+ca.d[i][j][k].e[k+1][k+2] = 3;
+
+ca.d[(i) % ca.d_num_0]
+    [(j) % ca.d_num_1]
+    [(k) % ca.d_num_2].
+	e[(k+1) % ca.d[(i) % ca.d_num_0]
+	           [(j) % ca.d_num_1]
+		   [(k) % ca.d_num_2].e_num_0
+	 ]
+	 [(k+2) % ca.d[(i) % ca.d_num_0]
+		  [(j) % ca.d_num_1]
+		  [(k) % ca.d_num_2].e_num_1
+	] 
+	= 3;
+
+
+
+
+
+
+C)	C的实现
+D)	D的实现
+
