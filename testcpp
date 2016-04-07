@@ -1,0 +1,105 @@
+#define TEST_NUM 12
+class CB;
+class CA
+{
+public:
+	int a[25];
+	const static bool a_pointer = false;
+	const static int a_dimen = 1;
+	const static int a_num_0 = 25;
+
+	double b[TEST_NUM][TEST_NUM + 1][2 * TEST_NUM];
+	const static bool b_pointer = false;
+	const static int b_dimen = 3;
+	const static int b_num_0 = TEST_NUM;
+	const static int b_num_1 = TEST_NUM + 1;
+	const static int b_num_2 = 2 * TEST_NUM;
+
+	float** c;
+	const static bool c_pointer = true;
+	const static int c_dimen = 2;
+	int c_num_0;
+	int c_num_1;
+
+	CB*** d;
+	const static bool d_pointer = true;
+	const static int d_dimen = 3;
+	int d_num_0;
+	int d_num_1;
+	int d_num_2;
+};
+class CB
+{
+public:
+	int e[5][5];
+	const static bool e_pointer = false;
+	const static int e_dimen = 2;
+	const static int e_num_0 = 4;
+	const static int e_num_1 = 5;
+};
+
+int inittest()
+{
+	CA ca;
+
+
+	for(int i = 0; i < 25; i++) ca.a[(i) % ca.a_num_0] = i * 2;
+
+	for(int i = 0; i < TEST_NUM; i++)
+	{
+		for(int j = 0; j < TEST_NUM + 1; j++)
+		{
+			for(int k = 0; k < 2 * TEST_NUM; k++)
+			{
+				ca.b[(i) % ca.b_num_0][(j) % ca.b_num_1][(k) % ca.b_num_2] = i + j + k;
+			}
+		}
+	}
+
+	
+	ca.c = new float*[ca.c_num_0 = (10)];
+	for(int i = 0; i < 25; i++)
+	{
+		ca.c[(i) % ca.c_num_0] = new float[ca.c_num_1 = (5)];
+	}
+
+	int testi = 13;
+	ca.d = new CB**[ca.d_num_0 = (testi)];
+	for(int i = 0; i < testi; i++)
+	{
+		ca.d[(i) % ca.d_num_0] = new CB*[ca.d_num_1 = (6)];
+		for(int j = 0; j < 6; j++)
+		{
+			ca.d[(i) % ca.d_num_0][(j) % ca.d_num_1] = new CB[ca.d_num_2 = (5)];
+		}
+	}
+
+	for(int i = 0; i < testi; i++)
+	{
+		for(int j = 0; j < 6; j++)
+		{
+			for(int k = 0; k < 5; k++) 
+			{
+				ca.d[(i) % ca.d_num_0]
+				    [(j) % ca.d_num_1]
+					[(k) % ca.d_num_2].
+					   e[(k) % ca.d[(i) % ca.d_num_0]
+								  [(j) % ca.d_num_1]
+								  [(k) % ca.d_num_2].e_num_0
+					    ]
+						[(k) % ca.d[(i) % ca.d_num_0]
+							      [(j) % ca.d_num_1]
+								  [(k) % ca.d_num_2].e_num_1
+						] 
+				= 3;
+			}
+		}
+	}
+
+	return 0;
+}
+
+
+
+
+
